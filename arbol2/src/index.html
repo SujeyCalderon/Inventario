@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario de Productos</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Inventario de Productos</h1>
+        <div class="form">
+            <input type="number" id="id" placeholder="ID del Producto">
+            <input type="text" id="name" placeholder="Nombre del Producto">
+            <input type="number" id="price" placeholder="Precio">
+            <button id="insert">Insertar</button>
+            <button id="search">Buscar</button>
+            <button id="print">Imprimir Todos</button>
+        </div>
+        <div id="results"></div>
+        <div id="min-max">
+            <button id="min">Producto con precio más bajo</button>
+            <button id="max">Producto con precio más alto</button>
+        </div>
+        <table id="productsTable" border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+    <script type="module">
+        import { insertProduct, searchProduct, printProducts, getMinValueProduct, getMaxValueProduct } from './controllers/productController.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const insertProductHandler = () => {
+                const id = parseInt(document.getElementById('id').value);
+                const name = document.getElementById('name').value;
+                const price = parseFloat(document.getElementById('price').value);
+                if (id && name && price) {
+                    insertProduct(id, name, price);
+                    alert('Producto insertado');
+                    document.getElementById('id').value = '';
+                    document.getElementById('name').value = '';
+                    document.getElementById('price').value = '';
+                } else {
+                    alert('Por favor, ingrese todos los campos');
+                }
+            };
+
+            const searchProductHandler = () => {
+                const id = parseInt(document.getElementById('id').value);
+                const product = searchProduct(id);
+                if (product) {
+                    alert(`ID: ${product.id}, Nombre: ${product.name}, Precio: ${product.price}`);
+                } else {
+                    alert('Producto no encontrado');
+                }
+            };
+
+            const printProductsHandler = () => {
+                const tbody = document.querySelector('#productsTable tbody');
+                tbody.innerHTML = '';
+                printProducts(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${product.id}</td><td>${product.name}</td><td>${product.price}</td>`;
+                    tbody.appendChild(row);
+                });
+            };
+
+            const minMaxHandler = (func) => {
+                const product = func();
+                if (product) {
+                    alert(`ID: ${product.id}, Nombre: ${product.name}, Precio: ${product.price}`);
+                } else {
+                    alert('No hay productos registrados');
+                }
+            };
+
+            document.getElementById('insert').addEventListener('click', insertProductHandler);
+            document.getElementById('search').addEventListener('click', searchProductHandler);
+            document.getElementById('print').addEventListener('click', printProductsHandler);
+            document.getElementById('min').addEventListener('click', () => minMaxHandler(getMinValueProduct));
+            document.getElementById('max').addEventListener('click', () => minMaxHandler(getMaxValueProduct));
+        });
+    </script>
+</body>
+</html>
